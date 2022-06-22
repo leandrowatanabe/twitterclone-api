@@ -20,7 +20,12 @@ router.get('/tweets', async ctx=>{
         const tweets = await prisma.tweet.findMany({
             include: {
                 user:true
-            }
+            },
+            orderBy:[
+                {
+                    timestamp: 'desc'
+                }
+            ]
         })
         ctx.body =  tweets
     } catch(error){
@@ -42,7 +47,8 @@ router.post('/tweets', async ctx=>{
         const tweet = await prisma.tweet.create({
             data: {
                 userId: payload.sub,
-                text: ctx.request.body.text
+                text: ctx.request.body.text,
+                timestamp: ctx.request.body.timestamp
             }
         })
 
@@ -56,12 +62,8 @@ router.post('/tweets', async ctx=>{
 
 router.delete('/tweets', async ctx=>{
 
-    const id = ctx.request.body.id
+    const doc = await prisma.tweet.deleteMany({
 
-    const doc = await prisma.tweet.delete({
-        where:{
-            id
-        }
     })
 
     ctx.body = doc
