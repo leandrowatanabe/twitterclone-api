@@ -60,14 +60,6 @@ router.post('/tweets', async ctx=>{
     }
 })
 
-router.delete('/tweets', async ctx=>{
-
-    const doc = await prisma.tweet.deleteMany({
-
-    })
-
-    ctx.body = doc
-})
 
 router.put('/tweets', async ctx=>{
 
