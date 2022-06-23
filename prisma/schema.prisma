@@ -27,6 +27,7 @@ model Tweet{
   userId    String
   text      String
   timestamp String
+  likes     Int
   user      User @relation(fields: [userId], references: [id])
 
   @@index([userId])

@@ -7,10 +7,10 @@ export const router = new Router()
 
 const prisma = new PrismaClient()
 
-router.get('/tweets', async ctx=>{
+router.get('/tweets', async ctx => {
     const [, token] = ctx.request.headers?.authorization?.split(' ') || []
 
-    if(!token){
+    if (!token) {
         ctx.status = 401
         return
     }
@@ -19,7 +19,7 @@ router.get('/tweets', async ctx=>{
         jwt.verify(token, process.env.JWT_SECRET)
         const tweets = await prisma.tweet.findMany({
             include: {
-                user:true
+                user: true
             },
             orderBy:[
                 {
@@ -27,9 +27,15 @@ router.get('/tweets', async ctx=>{
                 }
             ]
         })
-        ctx.body =  tweets
-    } catch(error){
-        ctx.status = 401
+        ctx.body = tweets
+    } catch (error) {
+        console.error(error)
+        if (typeof error === 'JsonWebTokenError') {
+            ctx.status = 401
+            return
+        }
+
+        ctx.status = 500
         return
     }
 })
@@ -48,13 +54,16 @@ router.post('/tweets', async ctx=>{
             data: {
                 userId:     payload.sub,
                 text:       ctx.request.body.text,
-                timestamp:  ctx.request.body.timestamp
+                timestamp:  ctx.request.body.timestamp,
+                likes: 0
             }
         })
 
         ctx.body = tweet
  
     } catch(error){
+        
+        console.error(error)
         ctx.status = 401
         return
     }
@@ -71,15 +80,17 @@ router.get('/users', async ctx=>{
        
         const users = await prisma.user.findMany({
             select:{
-                userId:     true,
+                id:     true,
                 name:       true,
-                username:   true
+                username:   true,
+                tweets: true
             }
         })
 
         ctx.body = users
  
     } catch(error){
+        console.error(error)
         ctx.status = 401
         return
     }
