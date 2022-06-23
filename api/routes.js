@@ -46,9 +46,9 @@ router.post('/tweets', async ctx=>{
 
         const tweet = await prisma.tweet.create({
             data: {
-                userId: payload.sub,
-                text: ctx.request.body.text,
-                timestamp: ctx.request.body.timestamp
+                userId:     payload.sub,
+                text:       ctx.request.body.text,
+                timestamp:  ctx.request.body.timestamp
             }
         })
 
@@ -60,22 +60,29 @@ router.post('/tweets', async ctx=>{
     }
 })
 
+router.get('/users', async ctx=>{
+    const [, token] = ctx.request.headers?.authorization?.split(' ') || []
 
-router.put('/tweets', async ctx=>{
+    if(!token){
+        ctx.status = 401
+        return
+    }
+    try {
+       
+        const users = await prisma.user.findMany({
+            select:{
+                userId:     true,
+                name:       true,
+                username:   true
+            }
+        })
 
-    const id = ctx.request.body.id
-    const text = ctx.request.body.text
-
-    const doc = await prisma.tweet.update({
-        where:{
-            id
-        },
-        data: {
-            text
-        }
-    })
-
-    ctx.body = doc
+        ctx.body = users
+ 
+    } catch(error){
+        ctx.status = 401
+        return
+    }
 })
 
 router.post('/signup', async ctx => {
@@ -85,9 +92,9 @@ router.post('/signup', async ctx => {
     try{
         const user = await prisma.user.create({
             data:{
-                name: ctx.request.body.name,
-                username: ctx.request.body.username,
-                email: ctx.request.body.email,
+                name:       ctx.request.body.name,
+                username:   ctx.request.body.username,
+                email:      ctx.request.body.email,
                 password,
             }
         })
@@ -97,10 +104,10 @@ router.post('/signup', async ctx => {
         }, process.env.JWT_SECRET,{ expiresIn: '12h'})
         
         ctx.body = {
-            id: user.id,
-            name: user.name,
-            username: user.username,
-            email: user.email,
+            id:         user.id,
+            name:       user.name,
+            username:   user.username,
+            email:      user.email,
             accessToken
         }
     } catch(error){
@@ -138,10 +145,10 @@ router.get('/login', async ctx => {
         }, process.env.JWT_SECRET,{ expiresIn: '12h'})
 
         ctx.body = {
-            id: user.id,
-            name: user.name,
-            username: user.username,
-            email: user.email,
+            id:             user.id,
+            name:           user.name,
+            username:       user.username,
+            email:          user.email,
             accessToken,
         }
 
