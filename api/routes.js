@@ -29,7 +29,7 @@ router.get('/tweets', async ctx => {
         })
         ctx.body = tweets
     } catch (error) {
-        console.error(error)
+        console.error
         if (typeof error === 'JsonWebTokenError') {
             ctx.status = 401
             return
