@@ -54,8 +54,7 @@ router.post('/tweets', async ctx=>{
             data: {
                 userId:     payload.sub,
                 text:       ctx.request.body.text,
-                timestamp:  ctx.request.body.timestamp,
-                likes: 0
+                timestamp:  ctx.request.body.timestamp
             }
         })
 
