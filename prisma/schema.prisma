@@ -17,14 +17,18 @@ model User {
   name     String
   email    String @unique
   username String @unique
-  password String
+  password String @unique
+
   tweets Tweet[]
 }
 
-model Tweet {
-  id     String @id @default(cuid())
-  userId String
-  text   String
-  user User @relation(fields: [userId], references: [id])
+model Tweet{
+  id        String @id @default(cuid())
+  userId    String
+  text      String
+  timestamp String
+  likes     Int
+  user      User @relation(fields: [userId], references: [id])
+
   @@index([userId])
 }
