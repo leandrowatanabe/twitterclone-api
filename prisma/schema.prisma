@@ -22,13 +22,13 @@ model User {
   tweets Tweet[]
 }
 
-model Tweet {
+model Tweet{
   id        String @id @default(cuid())
   userId    String
   text      String
   timestamp String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
+  likes     Int
+  user      User @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
